@@ -1,0 +1,175 @@
+{
+  "name": "Child Weather",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        -48
+      ],
+      "id": "1a751ef3-605a-4206-acd2-026408b6e206",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8a4a5b31-ed49-486e-bfc7-40f85af35b5a",
+              "name": "query",
+              "value": "={{ $json.query }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        0,
+        -48
+      ],
+      "id": "75d6f7c8-5d78-4029-afc8-ca3ae4903012",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.query }}"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        208,
+        -48
+      ],
+      "id": "64f14390-08d3-41a8-9fb7-6a02671cbcc5",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "d3jPLtmFLu3qUDER",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=you will get the open weather full details of a city and you will give the plain text.\nmain: {{ $json.weather[0].main }}\ndescription: {{ $json.weather[0].description }}\ntemp: {{ $json.main.temp }} \nfeels like:{{ $json.main.feels_like }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        416,
+        -48
+      ],
+      "id": "50baab14-c458-4eb4-b753-ab4adb45175c",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BY8Toypli6QJ8gfr",
+          "name": "Google Gemini(PaLM) Api account 4"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0a92d223-b71e-4e91-9cd0-832c3fa71b46",
+              "name": "response",
+              "value": "={{ $json.content.parts[0].text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        -48
+      ],
+      "id": "8dd46637-39b3-49b6-8a3c-2880a30fbef0",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cb3405d1-e487-4af5-a9bf-ad6a54381231",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa21f063961a444bac67da5836ed03268c50574ea6214ede001ff4f72571cbd6"
+  },
+  "id": "C69xLJlSUHhCSgxO",
+  "tags": []
+}

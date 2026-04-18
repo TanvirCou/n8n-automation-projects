@@ -1,0 +1,153 @@
+{
+  "name": "Weather",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -432,
+        -32
+      ],
+      "id": "11cb2ed1-f430-440f-bc35-0d5399b5b576",
+      "name": "When chat message received",
+      "webhookId": "15d4d1e8-0fa8-4dbb-a7ca-1aa1fc776fa3"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "You are a helpful assistant.\n#Tool:\n    - use \"Child Weather\" to find weather of any city\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -224,
+        -32
+      ],
+      "id": "50299bb8-c58d-49c6-aa54-4e0d1e55fd4a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        176
+      ],
+      "id": "b440548d-07a8-4a5d-a49b-5a2565c4bc86",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "description": "Use this to find weather of any city",
+        "workflowId": {
+          "__rl": true,
+          "value": "C69xLJlSUHhCSgxO",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/C69xLJlSUHhCSgxO",
+          "cachedResultName": "Child Weather"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "typeVersion": 2.2,
+      "position": [
+        -32,
+        176
+      ],
+      "id": "616f682e-c0bb-43c3-a07e-248d9dff21fb",
+      "name": "Call 'Child Weather'"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -368,
+        176
+      ],
+      "id": "9f01b005-821e-4ede-a83c-7aa8ac0c7c54",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "v36gDYSOJd2gZw5l",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'Child Weather'": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "27983826-9569-472d-96db-d425a7023fec",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aa21f063961a444bac67da5836ed03268c50574ea6214ede001ff4f72571cbd6"
+  },
+  "id": "p3FHw4CSLNBt2jTI",
+  "tags": []
+}
